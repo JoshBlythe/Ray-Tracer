@@ -1,0 +1,6 @@
+﻿  Generating code
+  11 of 81 functions (13.6%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Parallel_RayTracer.vcxproj -> C:\Users\s4908021\Parallel_RayTracer\Release\Parallel_RayTracer.exe
