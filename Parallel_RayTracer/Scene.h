@@ -6,9 +6,11 @@
 #include <thread>
 #include <mutex>
 
+class Plane;
 class Sphere;
 class Camera;
 class Tracer;
+
 
 
 #include "Light.h"
@@ -32,6 +34,7 @@ private:
 	std::shared_ptr<Camera> m_cam;
 	std::shared_ptr<Tracer> m_tracer;
 
+	std::shared_ptr<Plane> _plane;
 	std::vector < std::shared_ptr<Sphere>> m_spheres;
 
 	Light m_light;

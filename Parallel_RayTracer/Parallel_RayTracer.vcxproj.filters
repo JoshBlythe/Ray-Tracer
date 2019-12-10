@@ -36,8 +36,11 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\CGG_Main.cpp">
+    <ClCompile Include="CGG_Main.cpp">
       <Filter>Source Files\CGG</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,13 +56,16 @@
     <ClInclude Include="Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\CGG_Main.h">
+    <ClInclude Include="CGG_Main.h">
       <Filter>Header Files\CGG</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\Light.h">
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

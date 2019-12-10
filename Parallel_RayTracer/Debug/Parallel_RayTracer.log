@@ -1,2 +1,7 @@
-﻿  Tracer.cpp
-  Parallel_RayTracer.vcxproj -> C:\Users\Josh'sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Debug\Parallel_RayTracer.exe
+﻿  Scene.cpp
+c:\users\s4908021\parallel_raytracer\parallel_raytracer\scene.cpp(73): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+  Parallel_RayTracer.vcxproj -> C:\Users\s4908021\Parallel_RayTracer\Debug\Parallel_RayTracer.exe

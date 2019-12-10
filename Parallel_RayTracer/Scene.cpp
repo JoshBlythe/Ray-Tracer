@@ -3,6 +3,7 @@
 #include "Ray.h"
 #include "Camera.h"
 #include "Tracer.h"
+#include "Plane.h"
 #include "Sphere.h"
 
 Scene::Scene()
@@ -24,12 +25,14 @@ void Scene::Init(int _windowW, int _windowH)
 	m_windowW = _windowW;
 	m_windowH = _windowH;
 
+	_plane = std::make_shared<Plane>(glm::vec3(0.0f, -10.0f, 0.0f));
+
 	//creating of spheres.
-	std::shared_ptr<Sphere> _s1 = std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -8.0f), 1.0f, 1);
+	std::shared_ptr<Sphere> _s1 = std::make_shared<Sphere>(glm::vec3(3.0f, 0.0f, -8.0f), 1.0f, glm::vec3(0.0f, 1.0f, 0.0f), 1);
 	m_spheres.push_back(_s1);
-	std::shared_ptr<Sphere> _s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -10.0f), 2.0f, 0);
+	std::shared_ptr<Sphere> _s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -10.0f), 2.0f, glm::vec3(0.0f, 0.0f, 1.0f), 1);
 	m_spheres.push_back(_s2);
-	std::shared_ptr<Sphere> _s3 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -12.0f), 1.0f, 0);
+	std::shared_ptr<Sphere> _s3 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -12.0f), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f), 0);
 	m_spheres.push_back(_s3);
 
 	//initalise light within the screen
@@ -56,7 +59,7 @@ void Scene::WindowSections(int _threadStartX, int _threadendPosX)
 			//send through the pixel points and the window dimentions
 			Ray _currentRay = m_cam->createRay(_pixelPoint, m_windowW, m_windowH);
 			//the return colour is equal to the return value of the tracers trace function
-			_rtnColour = m_tracer->traceRay(_currentRay, m_spheres, m_light);
+			_rtnColour = m_tracer->traceRay(_currentRay, m_spheres, m_light, 0);
 
 			//as the values are returned between 0-1 as they come from a shader
 			//multiple by 255 to get correct colour values

@@ -21,7 +21,7 @@ class Sphere
 {
 public:
 	//Sphere() {};
-	Sphere(glm::vec3 _sphereCentre, float _sphereRadius, int _sphType);
+	Sphere(glm::vec3 _sphereCentre, float _sphereRadius, glm::vec3 _sphColour, int _sphType);
 	//~Sphere();
 
 	//void geoIntersection();

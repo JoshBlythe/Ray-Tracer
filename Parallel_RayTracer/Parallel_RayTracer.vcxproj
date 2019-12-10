@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{53B3B1DD-27A9-4C37-AF97-039862162885}</ProjectGuid>
     <RootNamespace>Parallel_RayTracer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -118,7 +118,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\CGG_Main.cpp" />
+    <ClCompile Include="CGG_Main.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -126,9 +127,10 @@
     <ClCompile Include="Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\CGG_Main.h" />
-    <ClInclude Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\Light.h" />
-    <ClInclude Include="..\..\..\..\..\..\..\Josh%27sComputer\Documents\University\University Year 3\CGP\Parallel_RayTracer\Parallel_RayTracer\Scene.h" />
+    <ClInclude Include="CGG_Main.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Plane.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Ray.h" />

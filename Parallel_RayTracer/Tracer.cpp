@@ -12,7 +12,7 @@ Tracer::~Tracer()
 {
 }
 
-glm::vec3 Tracer::traceRay(Ray &_ray, std::vector<std::shared_ptr<Sphere>> &_sphereVec, Light &_light)
+glm::vec3 Tracer::traceRay(Ray _ray, std::vector<std::shared_ptr<Sphere>> _sphereVec, Light _light, int _depthCheck)
 {	
 	//declare colour
 	//m_lightVec.push_back(_light);
@@ -23,132 +23,96 @@ glm::vec3 Tracer::traceRay(Ray &_ray, std::vector<std::shared_ptr<Sphere>> &_sph
 
 	if (IntersectionCheck(_ray, _sphereVec, _light, _objectTest))
 	{
-		//return colour of sphere
-		_rtnCol = _objectTest._colour;
-	}
-
-	glm::vec3 _collPoint = _ray.m_origin + _ray.m_dir * _objectTest._intersectionDistance;
-	glm::vec3 _normal = _objectTest._closestSphere->objNormal(_objectTest._intersectionLoc);
-	glm::vec3 _lightDir = glm::normalize(_objectTest._intersectionLoc - _light.m_lightPos);
-
-
-	switch (_objectTest._closestSphere->getSphereType())
-	{
-	case(0):
-	{
-		//if diffuse
-		ObjectCheck _shadowCheck;
-		Ray _shadowTest = m_cam->spawnNewRay(_collPoint + _normal * 0.001f, -_lightDir);
-
-		bool _isVis = !IntersectionCheck(_shadowTest, _sphereVec, _light, _shadowCheck);
-
-		if (_isVis)
+		//check if there is intersection
+		if (_objectTest.m_isIntersection)
 		{
-			_rtnCol += _light.m_lightIntensity * _objectTest._closestSphere->getMaterialCol() *
-				glm::max(0.0f, glm::dot(_normal, -_lightDir));
+			//if intersected shade sphere
+			_rtnCol = _objectTest._closestSphere->shadePixel(_ray, _objectTest._intersectionLoc, _light);
+
+			//get the intersection location
+			glm::vec3 _hit = _objectTest._intersectionLoc;
+			//get the sphere surface normal
+			glm::vec3 _normal = _objectTest._closestSphere->objNormal(_objectTest._intersectionLoc);
+			//get the lights directions
+			glm::vec3 _lightDir = glm::normalize(_hit - _light.m_lightPos);
+
+			//get the spheres reflective properties
+			switch (_objectTest._closestSphere->getSphereType())
+			{
+				//if 0 then not reflective
+			case(0):
+			{
+				//test for shadow
+				//spawn a new ray from the intersection point back to the light
+				Ray _shadowTest = m_cam->spawnNewRay(_hit + _normal * 0.001f, -_lightDir);
+
+				//_rtnCol = _normal;
+				ObjectCheck _shadowCheck;
+
+				//if there is a intersection with shadow ray
+				if (IntersectionCheck(_shadowTest, _sphereVec, _light, _shadowCheck))
+				{
+					//if there is a intersection
+					if (_shadowCheck.m_isIntersection)
+					{
+						//return colour is in shadow
+						_rtnCol = { 0,0,0 };
+					}
+				}
+
+				break;
+			}
+			//if 1 then sphere is reflective.
+			case(1):
+			{
+				/*_rtnCol.g = _rtnCol.r;
+				_rtnCol.r = 0.0f;*/
+				//check for depth, this stops reflection being recursive
+				if (_depthCheck < 3)
+				{
+					//glm::vec3 _hitNorm = _hit + _normal * 0.001f;
+					glm::vec3 _bias = 0.001f * _normal;
+					glm::vec3 _reflection = objectReflection(_ray.m_dir, _normal);
+
+					Ray _reflectionRay = m_cam->spawnNewRay(_hit + _normal * _bias, _reflection);
+
+					_rtnCol += 0.8f * traceRay(_reflectionRay, _sphereVec, _light, _depthCheck + 1);
+				}
+
+				break;
+			}
+				
+			default:
+				break;
+			}
 		}
-		break;
 	}
-
-	case(1):
-	{
-		//has reflection.
-		glm::vec3 _reflect = objectReflection(_ray.m_dir, _collPoint);
-
-		Ray _reflectionRay = m_cam->spawnNewRay(_collPoint + _normal * 0.001f, _reflect);
-
-		_rtnCol += 0.8f * traceRay(_reflectionRay, _sphereVec, _light);
-
-		break;
-	}
-
-	default:
-		_rtnCol = _objectTest._colour;
-		break;
-	}
-
-	//ObjectCheck _shadeObj;
-	
-
-	//for (std::shared_ptr<Sphere> _spheres : _sphereVec)
-	//{
-	//	_checkIntersection = _spheres->IsCollision(_ray);
-	//	if (_checkIntersection.m_isColliding)
-	//	{
-	//		if (_checkIntersection.m_distToInter < _colPoint)
-	//		{
-	//			_colPoint = _checkIntersection.m_distToInter;
-	//			//_closestSphere = _spheres;
-	//			_rtnCol = _spheres->shadePixel(_ray, _checkIntersection.m_collisionPoint,_light);
-	//		}
-	//	}
-	//}
-	//for (std::shared_ptr<Sphere> _sphereShadow : _sphereVec)
-	//{
-	//	glm::vec3 _normal = _sphereShadow->objNormal(_collPoint);
-	//	//create the shadow ray.
-	//	Ray _shadowTest = m_cam->shadowRay(_collPoint + _normal * 0.001f, -_lightDir);
-	//	////test for collision 
-	//	checkCollision _shadeObject = _sphereShadow->IsCollision(_shadowTest);
-	//	bool _isVis = !_shadeObject.m_isColliding;
-	//	if (_shadeObject.m_isColliding)
-	//	{
-	//		_rtnCol += _light.m_lightIntensity * _sphereShadow->getMaterialCol() * glm::max(0.0f,
-	//			glm::dot(_normal, -_lightDir));
-	//		//_rtnCol = { 0, 0, 0 };
-	//	}
-	//}
-
-	return _rtnCol;
+	//return ray colour from sphere
+	return glm::clamp(_rtnCol,glm::vec3(0),glm::vec3(1));
 }
 
 bool Tracer::IntersectionCheck(Ray _ray, std::vector<std::shared_ptr<Sphere>> _sphereVec, Light _light, ObjectCheck &_object)
 {
 	float _colPoint = INFINITY;
-	
-	//for (std::shared_ptr<Sphere> _spheres : _sphereVec)
-	//{
-	//	checkCollision _checkIntersection = _spheres->IsCollision(_ray);
-	//	_object._closestSphere = _spheres;
 
-	//	_object._intersectionDistance = _checkIntersection.m_distToInter;
-
-	//	if (_checkIntersection.m_isColliding)
-	//	{
-	//		//_object.m_isIntersection = _checkIntersection.m_isColliding;
-	//		_object._intersectionLoc = _checkIntersection.m_collisionPoint;
-
-	//		if (_checkIntersection.m_distToInter < _colPoint)
-	//		{
-	//			_colPoint = _checkIntersection.m_distToInter;
-	//			_object._colour = _spheres->shadePixel(_ray, _checkIntersection.m_collisionPoint, _light);
-	//			//_check._intersectionLoc = _checkIntersection.m_collisionPoint;
-	//			//return true;
-
-	//		}
-	//	}
-
-	//}
+	_object._closestSphere = nullptr;
 
 	for (std::shared_ptr<Sphere> _spheres : _sphereVec)
 	{
 		checkCollision _checkIntersection = _spheres->IsCollision(_ray);
-		_object._closestSphere = _spheres;
 
-		_object._intersectionDistance = _checkIntersection.m_distToInter;
-		_object._intersectionLoc = _checkIntersection.m_collisionPoint;
-		_object.m_isIntersection = _checkIntersection.m_isColliding;
-
-		if (_object.m_isIntersection)
+		if (_checkIntersection.m_isColliding)
 		{
 			//_object.m_isIntersection = _checkIntersection.m_isColliding;
-			
-			if (_object._intersectionDistance < _colPoint)
+
+			if (_checkIntersection.m_distToInter < _colPoint)
 			{
-				_colPoint = _object._intersectionDistance;
-				_object._colour = _spheres->shadePixel(_ray, _checkIntersection.m_collisionPoint, _light);
-				//_check._intersectionLoc = _checkIntersection.m_collisionPoint;
-				//return true;
+				_object._closestSphere = _spheres;
+				_colPoint = _checkIntersection.m_distToInter;
+
+				_object._intersectionDistance = _checkIntersection.m_distToInter;
+				_object._intersectionLoc = _checkIntersection.m_collisionPoint;
+				_object.m_isIntersection = _checkIntersection.m_isColliding;
 
 			}
 		}
@@ -156,10 +120,10 @@ bool Tracer::IntersectionCheck(Ray _ray, std::vector<std::shared_ptr<Sphere>> _s
 	}
 
 	//return true;
-	return true;
+	return _object._closestSphere != nullptr;
 }
 
-glm::vec3 Tracer::objectReflection(glm::vec3 _i, glm::vec3 _norm)
+glm::vec3 Tracer::objectReflection(glm::vec3 &_i, glm::vec3 &_norm)
 {
 	return _i - 2 * glm::dot(_i, _norm) * _norm;
 }
